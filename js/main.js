@@ -66,26 +66,18 @@ function onEachFeature(feature, layer) {
 //     }).addTo(map);
 // };
 
-function getData(map){
-    $.ajax("data/RenewableEnergyProduction.geojson", {
-        dataType: "json",
-        success: function(response){
-            createPropSymbols(response, map);
-        }
-    });
-};
-
+//function to create symbols and assigns the settings of the symbols
 function createPropSymbols(data, map){
-    var attribute = "100";
+    var attribute = "2009";
     var geojsonMarkerOptions = {
-        radius: calcPropRadius(attribute),
+        radius: 8,
         fillcolor: "#003153",
         color: "#000",
         weight: 1,
         opacity: 1,
         fillOpacity: 0.8
     };
-
+//function to calculate the radius of the circles based on the attribute value
 function calcPropRadius(attValue) {
     var scaleFactor = 50;
     var area = attValue * scaleFactor;
@@ -93,14 +85,24 @@ function calcPropRadius(attValue) {
 
     return radius;
 };
-
+//creates the layer with the returned proportional symbols and settings
     L.geoJson(data, {
         pointToLayer: function (feature, latlng) {
             var attValue = Number(feature.properties[attribute]);
             console.log(feature.properties, attValue);
+            geojsonMarkerOptions.radius = calcPropRadius(attValue);
             return L.circleMarker(latlng, geojsonMarkerOptions);
         }
     }).addTo(map);
+};
+//grabs the data via ajax from the gejson file
+function getData(map){
+    $.ajax("data/RenewableEnergyProduction.geojson", {
+        dataType: "json",
+        success: function(response){
+            createPropSymbols(response, map);
+        }
+    });
 };
 
 //engages the createMap when the document has finished loading
